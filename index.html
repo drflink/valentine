@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine 💘</title>
+
+<style>
+* { box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+body {
+  margin: 0; min-height: 100vh;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  display: flex; align-items: center; justify-content: center;
+  overflow-x: hidden; transition: background 2s ease;
+}
+
+body.dark { background: radial-gradient(circle at top, #2b0033, #000); }
+
+/* SCROLLING BACKGROUND */
+.bg-collage {
+  position: fixed; top: 0; left: 0; width: 100%;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  opacity: 0.12; filter: blur(3px); z-index: 1;
+  animation: scrollUp 60s linear infinite;
+}
+
+@keyframes scrollUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.bg-collage img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; }
+
+/* CARD UI */
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px; border-radius: 22px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  max-width: 450px; width: 90%; text-align: center;
+  z-index: 10; backdrop-filter: blur(10px);
+  transition: all 0.5s ease;
+}
+
+body.dark .card { 
+  background: rgba(20,20,20,0.8); 
+  color: rgba(255, 255, 255, 0.9); 
+  border: 1px solid rgba(255,255,255,0.1); 
+}
+
+p { line-height: 1.6; text-shadow: 0 1px 2px rgba(0,0,0,0.1); opacity: 0.9; }
+
+.slideshow, .big-slideshow { width: 100%; height: 260px; border-radius: 15px; overflow: hidden; margin: 15px 0; }
+.big-slideshow { height: 350px; }
+img.slide { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.8s ease; }
+
+.buttons { margin-top: 20px; position: relative; height: 50px; }
+button { padding: 12px 25px; font-size: 1rem; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+#yes { background: #ff4d6d; color: white; animation: pulse 1.5s infinite; }
+#no { background: #eee; color: #444; position: absolute; left: 50%; transform: translateX(20px); }
+
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.success, .lyrics, .letter, .photobook, .final-message { display: none; }
+
+/* PHOTOBOOK STYLES */
+.photobook {
+  max-height: 85vh; overflow-y: auto; padding: 20px;
+  scrollbar-width: thin; scrollbar-color: #ff4d6d transparent;
+}
+
+.memory-item { margin-bottom: 40px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; }
+.memory-item img { width: 100%; border-radius: 10px; margin-bottom: 12px; border: 2px solid #ff4d6d; }
+
+/* FIREWORKS CANVAS */
+#fireworks {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 999;
+}
+
+.heart, .sparkle { position: fixed; bottom: -50px; pointer-events: none; animation: floatUp linear infinite; z-index: 5; }
+@keyframes floatUp { to { transform: translateY(-125vh); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+<div class="bg-collage" id="bgCollage"></div>
+
+<div class="card" id="card">
+  <h1>Hey My Love 💕</h1>
+  <div class="slideshow"><img id="slide" class="slide" src="img1.jpg"></div>
+  <p>Every moment with you feels magical ✨<br>Buu I'm so sorry for asking you lateee i swear on you buu i was working on this the whole time<br>Will you be my Valentine? 💘</p>
+  <div class="buttons">
+    <button id="yes">Yes 💖</button>
+    <button id="no">No 🙃</button>
+  </div>
+</div>
+
+<div class="card success" id="success">
+  <h1>I love you So much mero bubuu 😍</h1>
+  <div class="big-slideshow"><img id="bigSlide" class="slide" src="img1.jpg"></div>
+  <p>Thank you for making my life so beautiful and special. You are my everything. <br><br>Don't skip yet, let the magic happen itself.</p>
+</div>
+
+<div class="card lyrics" id="lyrics">
+  <h1>🎶 Our Song 🎶</h1>
+  <p>Every breath you take...</p>
+  <p>Every move you make...</p>
+  <p>Every bond you break...</p>
+  <p>Every step you take...</p>
+  <p style="font-size: 1.2rem; color: #ff4d6d; font-weight: bold;">I'll be watching you ❤️</p>
+</div>
+
+<div class="card letter" id="letter">
+  <h1>My Forever 💌</h1>
+  <p>You are my safe place, my happiness, and my favorite person in the world.<br><br>I choose you. Always.</p>
+  <button id="openBook" style="background:#ff4d6d; color:white; margin-top:15px;">Open Our Photo Book 📖</button>
+</div>
+
+<div class="card photobook" id="photobook">
+  <h1>Our Memories 📔</h1>
+  <div id="bookContent"></div>
+  <button id="finalFirework" style="background:#ff4d6d; color:white; margin-top:20px; width: 100%;">I Love You Forever ❤️</button>
+</div>
+
+<div class="card final-message" id="finalMessage">
+  <h1>Hey cutie buubuu pukuluu ❤️</h1>
+  <p style="text-align: left; font-size: 0.95rem;">
+    I just want you to know how much that “yes” meant to me.<br><br>
+    I don’t just want moments with you, I want memories, growth, laughs, hard days, silly days — all of it, with you. 
+    Thank you for choosing me.<br><br>
+    I promise to keep choosing you too — every day, in every way I can 💕<br><br>
+    <strong>Forever your Valentine,<br>Always your person ❤️✨</strong>
+  </p>
+</div>
+
+<audio id="bgMusic" loop><source src="every-breath-you-take.mp3" type="audio/mpeg"></audio>
+
+<script>
+const memories = [
+  { src: "img1.jpg", text: "Our First meet after a very long time. HIHII Also i was very very very nervous." },
+  { src: "img2.jpg", text: "I love this photo of us so much. The chatpate and the view was perfect." },
+  { src: "img3.jpg", text: "How can we forget this moment.. Ughhhh" },
+  { src: "img4.jpg", text: "Mwahhh mero cutiepiee." },
+  { src: "img5.jpg", text: "Buu please dont blame me pleasee. It was the moment who made me do it." },
+  { src: "img6.jpg", text: "Dil jhoom jhoom i love you in kurtha buuu" },
+  { src: "img7.jpg", text: "Basuri was whole another thing." },
+  { src: "img8.jpg", text: "Mero rider bubuuu" },
+  { src: "img9.jpg", text: "Thinking about our future together. BEST PIC OF US TOGETHER" },
+  { src: "img10.jpg", text: "The OG CAFE" },
+  { src: "img11.jpg", text: "Basantapur. How can i forget this day" },
+  { src: "img12.jpg", text: "BU this was the shittiest place weve been but we had fun tho" },
+  { src: "img13.jpg", text: "Ummm... ITS TOO WINDY HERE" }
+];
+
+const music = document.getElementById("bgMusic");
+const bgCollage = document.getElementById("bgCollage");
+let slideIndex = 0;
+
+[...memories, ...memories].forEach(m => {
+  const img = document.createElement("img");
+  img.src = m.src;
+  bgCollage.appendChild(img);
+});
+
+function updateSlide(targetId) {
+  const target = document.getElementById(targetId);
+  if(!target) return;
+  target.style.opacity = 0;
+  setTimeout(() => {
+    slideIndex = (slideIndex + 1) % memories.length;
+    target.src = memories[slideIndex].src;
+    target.style.opacity = 1;
+  }, 500);
+}
+
+let mainInterval = setInterval(() => updateSlide("slide"), 3000);
+
+const noBtn = document.getElementById("no");
+noBtn.addEventListener("mouseover", () => {
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 50);
+  noBtn.style.position = "fixed"; noBtn.style.left = x + "px"; noBtn.style.top = y + "px";
+});
+
+document.getElementById("yes").addEventListener("click", () => {
+  music.play();
+  clearInterval(mainInterval);
+  document.body.classList.add("dark");
+  document.getElementById("card").style.display = "none";
+  document.getElementById("success").style.display = "block";
+  setInterval(() => updateSlide("bigSlide"), 2500);
+  setTimeout(() => {
+    document.getElementById("success").style.display = "none";
+    document.getElementById("lyrics").style.display = "block";
+  }, 10000); 
+  setTimeout(() => {
+    document.getElementById("lyrics").style.display = "none";
+    document.getElementById("letter").style.display = "block";
+  }, 18000);
+});
+
+document.getElementById("openBook").addEventListener("click", () => {
+  const container = document.getElementById("bookContent");
+  document.getElementById("letter").style.display = "none";
+  document.getElementById("photobook").style.display = "block";
+  memories.forEach(m => {
+    const item = document.createElement("div");
+    item.className = "memory-item";
+    item.innerHTML = `<img src="${m.src}"><p>${m.text}</p>`;
+    container.appendChild(item);
+  });
+});
+
+// --- FIREWORKS & FINAL MESSAGE ---
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resize() {
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize); resize();
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x; this.y = y; this.color = color;
+    this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+    this.alpha = 1; this.friction = 0.95;
+  }
+  draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); }
+  update() { this.velocity.x *= this.friction; this.velocity.y *= this.friction; this.x += this.velocity.x; this.y += this.velocity.y; this.alpha -= 0.01; }
+}
+
+function createFirework() {
+  const x = Math.random() * canvas.width; const y = Math.random() * canvas.height / 2;
+  const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+  for (let i = 0; i < 30; i++) { particles.push(new Particle(x, y, color)); }
+}
+
+function animateFireworks() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach((p, i) => { if (p.alpha > 0) { p.update(); p.draw(); } else { particles.splice(i, 1); } });
+  requestAnimationFrame(animateFireworks);
+}
+animateFireworks();
+
+document.getElementById("finalFirework").addEventListener("click", () => {
+  // Trigger Fireworks
+  const fireworkInterval = setInterval(createFirework, 300);
+  setTimeout(() => clearInterval(fireworkInterval), 8000);
+  
+  // Transition to Final Personal Letter
+  document.getElementById("photobook").style.display = "none";
+  document.getElementById("finalMessage").style.display = "block";
+});
+
+setInterval(() => {
+  const el = document.createElement("div");
+  el.className = Math.random() > 0.5 ? "heart" : "sparkle";
+  el.innerHTML = el.className === "heart" ? "❤️" : "✨";
+  el.style.left = Math.random() * 100 + "vw";
+  el.style.fontSize = Math.random() * 20 + 15 + "px";
+  el.style.animationDuration = (Math.random() * 3 + 4) + "s";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 7000);
+}, 400);
+</script>
+
+</body>
+</html>
